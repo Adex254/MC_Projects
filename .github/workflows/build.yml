@@ -1,0 +1,30 @@
+name: Build MC_Projects
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # Downloads your entire MC_Projects repo to GitHub's computer
+
+      - uses: arduino/setup-arduino-cli@v1
+        # Installs the Arduino compiler tool
+
+      - run: |
+          arduino-cli core update-index
+          # Downloads list of all available boards
+
+          arduino-cli core install esp32:esp32
+          # Installs ESP32 compiler (~300MB)
+
+          arduino-cli lib install "ESP32Servo"
+          # Installs servo library your code needs
+
+          arduino-cli compile --fqbn esp32:esp32:esp32 Servo_Buzzer/Servo_Buzzer.ino --export-binaries
+          # Compiles your Servo_Buzzer code into a BIN file
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Servo_Buzzer_firmware
+          path: Servo_Buzzer/build/**/*.bin
+          # Saves the BIN file for you to download
