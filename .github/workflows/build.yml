@@ -1,30 +1,31 @@
-name: Build MC_Projects
+name: Build Buzzer Alone
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # Downloads your entire MC_Projects repo to GitHub's computer
 
       - uses: arduino/setup-arduino-cli@v1
-        # Installs the Arduino compiler tool
 
       - run: |
           arduino-cli core update-index
-          # Downloads list of all available boards
-
           arduino-cli core install esp32:esp32
-          # Installs ESP32 compiler (~300MB)
-
-          arduino-cli lib install "ESP32Servo"
-          # Installs servo library your code needs
-
-          arduino-cli compile --fqbn esp32:esp32:esp32 Servo_Buzzer/Servo_Buzzer.ino --export-binaries
-          # Compiles your Servo_Buzzer code into a BIN file
+          
+          # Compile the new Buzzer_Alone project
+          arduino-cli compile --fqbn esp32:esp32:esp32 Buzzer_Alone/Buzzer_Alone.ino --export-binaries
+          
+          # Create the merged.bin for easy flashing
+          python3 -m pip install esptool
+          python3 -m esptool --chip esp32 merge_bin \
+            -o Buzzer_Alone/merged.bin \
+            --flash_mode dio \
+            --flash_size 4MB \
+            0x1000 Buzzer_Alone/build/esp32.esp32.esp32/Buzzer_Alone.ino.bootloader.bin \
+            0x8000 Buzzer_Alone/build/esp32.esp32.esp32/Buzzer_Alone.ino.partitions.bin \
+            0x10000 Buzzer_Alone/build/esp32.esp32.esp32/Buzzer_Alone.ino.bin
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Servo_Buzzer_firmware
-          path: Servo_Buzzer/build/**/*.bin
-          # Saves the BIN file for you to download
+          name: Buzzer_Alone_Binary
+          path: Buzzer_Alone/merged.bin
