@@ -6,7 +6,6 @@ int servoPin = 4;
 void setup() {
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
-  
   myServo.setPeriodHertz(50);           
   myServo.attach(servoPin, 500, 2400);  
 }
