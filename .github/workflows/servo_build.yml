@@ -1,0 +1,19 @@
+name: Build Servo Project
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v1
+      - run: |
+          arduino-cli core update-index || echo "ok"
+          arduino-cli core install esp32:esp32
+          arduino-cli lib install "ESP32Servo"
+          arduino-cli compile --fqbn esp32:esp32:esp32 Servo_Only/Servo_Only.ino --export-binaries
+          python3 -m pip install esptool
+          python3 -m esptool --chip esp32 merge_bin -o Servo_Only/servo_merged.bin --flash_mode dio --flash_size 4MB 0x1000 Servo_Only/build/esp32.esp32.esp32/Servo_Only.ino.bootloader.bin 0x8000 Servo_Only/build/esp32.esp32.esp32/Servo_Only.ino.partitions.bin 0x10000 Servo_Only/build/esp32.esp32.esp32/Servo_Only.ino.bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Servo_Firmware
+          path: Servo_Only/servo_merged.bin
