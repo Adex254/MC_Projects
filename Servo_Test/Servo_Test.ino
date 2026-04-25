@@ -14,8 +14,8 @@ void setup() {
 }
 
 void loop() {
-  myServo.write(90); // Move to 90
-  delay(3000);      // Stay for 3s
-  myServo.write(0);  // Move to 0
-  delay(3000);      // Stay for 3s
+  myServo.write(90);
+  delay(3000); 
+  myServo.write(0);
+  delay(3000); 
 }
