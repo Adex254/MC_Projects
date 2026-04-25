@@ -1,0 +1,21 @@
+name: Ultimate Bin Build
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v1
+      - name: Install All Libs
+        run: |
+          arduino-cli core update-index --additional-urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core install esp32:esp32 --additional-urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli lib install "LiquidCrystal I2C" "ESP32Servo" "IRremote"
+      - name: Compile
+        run: |
+          mkdir out
+          arduino-cli compile --fqbn esp32:esp32:esp32 mc_projects/Ultimate_Bin/Ultimate_Bin.ino --output-dir ./out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ultimate_Bin_Firmware
+          path: out/*.bin
