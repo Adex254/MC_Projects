@@ -1,0 +1,28 @@
+name: Build mc_projects
+
+on:
+  push:
+    paths:
+      - 'mc_projects/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: arduino/setup-arduino-cli@v1
+      - name: Install ESP32
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+      - name: Install Servo Library
+        run: arduino-cli lib install "ESP32Servo"
+      - name: Compile
+        run: |
+          arduino-cli compile --fqbn esp32:esp32:esp32devkitV1 mc_projects/ --output-dir build/
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: build/*.bin
