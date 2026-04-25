@@ -7,14 +7,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: arduino/setup-arduino-cli@v1
       - run: |
-          arduino-cli core update-index
+          # Use force flag to bypass strict update issues if needed
+          arduino-cli core update-index || echo "Core update issue, continuing..."
           arduino-cli core install esp32:esp32
-          # Installs both potential versions of the I2C library
+          
+          # This installs the I2C library your code needs
           arduino-cli lib install "LiquidCrystal I2C"
           
-          # This compiles ONLY the LCD folder
+          # This compiles ONLY your LCD_Display/ folder
           arduino-cli compile --fqbn esp32:esp32:esp32 LCD_Display/LCD_Display.ino --export-binaries
           
+          # The next section merges the parts into one distinct file
           python3 -m pip install esptool
           python3 -m esptool --chip esp32 merge_bin \
             -o LCD_Display/lcd_merged.bin \
