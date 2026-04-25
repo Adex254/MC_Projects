@@ -26,7 +26,7 @@ jobs:
           pip install esptool
           ls build/
           esptool --chip esp32 merge-bin \
-            -o build/merged.bin \
+            -o build/servo_merged.bin \
             --flash-mode dio \
             --flash-freq 40m \
             --flash-size 4MB \
@@ -37,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: build/merged.bin
+          path: build/servo_merged.bin
