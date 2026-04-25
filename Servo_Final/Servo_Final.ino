@@ -1,18 +1,11 @@
 #include <ESP32Servo.h>
-
-Servo myServo;
-int servoPin = 4; 
-
+Servo s;
 void setup() {
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  myServo.setPeriodHertz(50);           
-  myServo.attach(servoPin, 500, 2400);  
+  s.attach(4);
 }
-
 void loop() {
-  myServo.write(90);
-  delay(3000); 
-  myServo.write(0);
-  delay(3000); 
+  s.write(90);
+  delay(3000);
+  s.write(0);
+  delay(3000);
 }
