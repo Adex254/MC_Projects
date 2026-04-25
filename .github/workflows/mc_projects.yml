@@ -24,14 +24,15 @@ jobs:
       - name: Merge bin files
         run: |
           pip install esptool
-          esptool merge-bin \
+          ls build/
+          esptool --chip esp32 merge-bin \
             -o build/merged.bin \
             --flash-mode dio \
             --flash-freq 40m \
             --flash-size 4MB \
-            0x1000 build/mc_projects.ino.bootloader.bin \
-            0x8000 build/mc_projects.ino.partitions.bin \
-            0x10000 build/mc_projects.ino.bin
+            0x1000 $(ls build/*.bootloader.bin) \
+            0x8000 $(ls build/*.partitions.bin) \
+            0x10000 $(ls build/*.ino.bin)
       - name: Upload merged bin
         uses: actions/upload-artifact@v4
         with:
