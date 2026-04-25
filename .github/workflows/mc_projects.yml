@@ -20,7 +20,7 @@ jobs:
         run: arduino-cli lib install "ESP32Servo"
       - name: Compile
         run: |
-          arduino-cli compile --fqbn esp32:esp32:esp32devkitV1 mc_projects/ --output-dir build/
+          arduino-cli compile --fqbn esp32:esp32:esp32doit-devkit-v1 mc_projects/ --output-dir build/
       - name: Upload bin
         uses: actions/upload-artifact@v4
         with:
