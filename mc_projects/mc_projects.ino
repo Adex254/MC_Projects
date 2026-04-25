@@ -4,7 +4,7 @@ Servo myServo;
 
 void setup() {
   myServo.setPeriodHertz(50);
-  myServo.attach(4, 500, 2400);
+  myServo.attach(13, 500, 2400);
 }
 
 void loop() {
