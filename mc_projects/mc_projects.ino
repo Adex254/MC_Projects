@@ -3,7 +3,7 @@
 Servo myServo;
 
 void setup() {
-  myServo.attach(18);
+  myServo.attach(4); // changed from 18 to 4
 }
 
 void loop() {
