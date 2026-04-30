@@ -1,13 +1,16 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <DHT.h>
 
-// Set LCD address to 0x27 or 0x3F
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-const int sensorPin = 34; // Middle pin of LM35
+#define DHTPIN 4       // Connection for the 'out' pin on your sensor
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
-  analogReadResolution(12); 
+  dht.begin();
   lcd.init();
   lcd.backlight();
   
@@ -18,20 +21,25 @@ void setup() {
 }
 
 void loop() {
-  int rawValue = analogRead(sensorPin);
+  float tempC = dht.readTemperature();
   
-  // ESP32 ADC: 3.3V / 4095 units. LM35: 10mV per degree.
-  float voltage = rawValue * (3300.0 / 4095.0);
-  float tempC = voltage / 10.0;
+  if (isnan(tempC)) {
+    lcd.setCursor(0, 0);
+    lcd.print("Sensor Error  ");
+    return;
+  }
 
   lcd.setCursor(0, 0);
   lcd.print("Temp: ");
   lcd.print(tempC);
-  lcd.print(" C  "); // Spaces prevent ghost numbers
+  lcd.print(" C  "); 
 
   lcd.setCursor(0, 1);
-  if(tempC > 30) lcd.print("Status: Warm ");
-  else lcd.print("Status: Normal");
+  if(tempC > 30) {
+    lcd.print("Status: Warm   ");
+  } else {
+    lcd.print("Status: Normal ");
+  }
 
-  delay(1000);
+  delay(2000); 
 }
