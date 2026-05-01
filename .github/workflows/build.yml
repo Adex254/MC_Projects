@@ -1,0 +1,43 @@
+name: Build ESP32 BIN
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          sudo mv bin/arduino-cli /usr/local/bin/
+
+      - name: Setup ESP32 core
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install LCD library
+        run: |
+          arduino-cli lib install "LiquidCrystal I2C"
+
+      - name: Compile
+        run: |
+          arduino-cli compile --fqbn esp32:esp32:esp32 .
+
+      - name: Merge BIN
+        run: |
+          pip install esptool
+          esptool.py --chip esp32 merge_bin -o firmware_merged.bin \
+          --flash_mode dio --flash_freq 40m --flash_size 4MB \
+          0x1000 build/*/bootloader.bin \
+          0x8000 build/*/partitions.bin \
+          0x10000 build/*/*.bin
+
+      - name: Upload BIN
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: firmware_merged.bin
