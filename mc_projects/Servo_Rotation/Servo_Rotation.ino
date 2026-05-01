@@ -1,23 +1,39 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
 #include <ESP32Servo.h>
 
-Servo myServo; 
-int servoPin = 4; // Using 18 to avoid conflict with your DHT11 on Pin 4
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+Servo myServo;
+int servoPin = 13;
 
 void setup() {
-  // Allow the ESP32 to manage the PWM timers correctly
+  lcd.init();
+  lcd.backlight();
+  lcd.print("Servo Debugger");
+  delay(1000);
+
+  // Essential ESP32 Servo setup
   ESP32PWM::allocateTimer(0);
   ESP32PWM::allocateTimer(1);
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
-
-  myServo.setPeriodHertz(50);           // Standard 50Hz servo frequency
-  myServo.attach(servoPin, 500, 2400);  // Min and max pulse width
+  myServo.setPeriodHertz(50);
+  myServo.attach(servoPin, 500, 2400);
 }
 
 void loop() {
-  myServo.write(90);  // Rotate to 90 degrees
-  delay(2000);        // Wait 2 seconds
- 
-  myServo.write(0);   // Rotate back to 0 degrees
-  delay(2000);        // Wait 2 seconds
+  lcd.clear();
+  lcd.print("Pos: 0 deg");
+  myServo.write(0);
+  delay(2000);
+
+  lcd.clear();
+  lcd.print("Pos: 90 deg");
+  myServo.write(90);
+  delay(2000);
+
+  lcd.clear();
+  lcd.print("Pos: 180 deg");
+  myServo.write(180);
+  delay(2000);
 }
