@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # Checkout repo
+      - uses: actions/checkout@v4
 
       # Install Arduino CLI
       - name: Install Arduino CLI
@@ -15,13 +16,13 @@ jobs:
           curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
           sudo mv bin/arduino-cli /usr/local/bin/
 
-      # Install ESP32 core
+      # Setup ESP32 core
       - name: Setup ESP32 core
         run: |
           arduino-cli core update-index
           arduino-cli core install esp32:esp32
 
-      # Install LCD library
+      # Install required library
       - name: Install LCD library
         run: |
           arduino-cli lib install "LiquidCrystal I2C"
@@ -31,7 +32,7 @@ jobs:
         run: |
           arduino-cli compile --fqbn esp32:esp32:esp32 --output-dir build .
 
-      # Merge all binaries into ONE
+      # Merge all binaries into one
       - name: Merge BIN
         run: |
           pip install esptool
@@ -42,9 +43,9 @@ jobs:
           0x8000 build/*/partitions.bin \
           0x10000 build/*/firmware.bin
 
-      # Upload merged bin
+      # Upload merged BIN
       - name: Upload BIN
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: firmware
           path: firmware_merged.bin
