@@ -1,0 +1,31 @@
+name: Arduino Compile
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Arduino CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+          echo "/home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/bin" >> $GITHUB_PATH
+
+      - name: Install Board and Library
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+          arduino-cli lib install "LiquidCrystal I2C"
+
+      - name: Compile for Uno
+        run: |
+          arduino-cli compile --fqbn arduino:avr:uno --output-dir ./build ./lcd_test
+
+      - name: Upload Hex Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: arduino-hex
+          path: ./build/*.hex
